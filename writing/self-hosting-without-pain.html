@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self-hosting without the pain — tarnished</title>
+<meta name="description" content="On losing the tinkering, finding it again, and building a home server that's mostly mine.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0c0b;
+  --bg2: #141413;
+  --bg3: #1c1c1a;
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.14);
+  --text: #e2ddd6;
+  --text-2: #8a8680;
+  --text-3: #4a4845;
+  --accent: #9cb898;
+  --accent-dim: rgba(156,184,152,0.12);
+  --mono: 'DM Mono', monospace;
+  --serif: 'Instrument Serif', serif;
+  --sans: 'DM Sans', sans-serif;
+}
+[data-theme="light"] {
+  --bg: #f4f2ee;
+  --bg2: #eceae5;
+  --bg3: #e2e0da;
+  --border: rgba(0,0,0,0.07);
+  --border-strong: rgba(0,0,0,0.14);
+  --text: #1a1916;
+  --text-2: #6b6860;
+  --text-3: #b0ada8;
+  --accent: #3a6636;
+  --accent-dim: rgba(58,102,54,0.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 0.5px solid var(--border);
+  padding: 0 32px;
+}
+.nav-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wordmark {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.nav-link {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.nav-link:hover { color: var(--text); }
+.theme-toggle {
+  background: none;
+  border: 0.5px solid var(--border-strong);
+  color: var(--text-2);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: color 0.15s;
+  font-size: 13px;
+}
+.theme-toggle:hover { color: var(--text); }
+
+/* ARTICLE LAYOUT */
+.article-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* HEADER */
+.article-header {
+  padding: 72px 0 56px;
+  border-bottom: 0.5px solid var(--border);
+  margin-bottom: 56px;
+}
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.article-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text-3);
+}
+.article-meta-line {
+  width: 24px;
+  height: 0.5px;
+  background: var(--text-3);
+}
+.article-date {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text-3);
+}
+.article-title {
+  font-family: var(--serif);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+.article-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+.article-lede {
+  font-size: 17px;
+  color: var(--text-2);
+  line-height: 1.75;
+  max-width: 580px;
+  font-weight: 300;
+}
+
+/* BODY */
+.article-body {
+  padding-bottom: 80px;
+  border-bottom: 0.5px solid var(--border);
+}
+.article-body p {
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--text-2);
+  margin-bottom: 1.6em;
+}
+.article-body p:last-child {
+  margin-bottom: 0;
+}
+.article-body strong {
+  color: var(--text);
+  font-weight: 400;
+}
+.article-body em {
+  font-style: italic;
+  font-family: var(--serif);
+  font-size: 1.05em;
+}
+
+/* SECTION BREAKS */
+.article-body h2 {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 3em 0 1.2em;
+  padding-top: 2em;
+  border-top: 0.5px solid var(--border);
+}
+
+/* PULL QUOTE */
+.pullquote {
+  border-left: 1.5px solid var(--accent);
+  padding: 4px 0 4px 28px;
+  margin: 2.4em 0;
+}
+.pullquote p {
+  font-family: var(--serif);
+  font-size: 20px !important;
+  line-height: 1.5 !important;
+  color: var(--text) !important;
+  font-style: italic;
+  margin-bottom: 0 !important;
+}
+
+/* STACK NOTE */
+.stack-note {
+  background: var(--bg2);
+  border: 0.5px solid var(--border-strong);
+  border-radius: 2px;
+  padding: 20px 24px;
+  margin: 2.4em 0;
+}
+.stack-note-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text-3);
+  margin-bottom: 12px;
+}
+.stack-note ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stack-note li {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-2);
+  display: flex;
+  gap: 12px;
+}
+.stack-note li::before {
+  content: '—';
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+.stack-note li strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* FOOTER NAV */
+.article-footer-nav {
+  padding: 40px 0 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-nav-back {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footer-nav-back:hover { color: var(--accent); }
+.footer-nav-back::before { content: '← '; }
+
+/* SITE FOOTER */
+footer {
+  border-top: 0.5px solid var(--border);
+  padding: 24px 32px;
+}
+.footer-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+}
+.footer-left, .footer-right {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .article-wrap { padding: 0 20px; }
+  nav { padding: 0 20px; }
+  footer { padding: 24px 20px; }
+  .article-header { padding: 48px 0 40px; }
+  .pullquote { padding-left: 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="wordmark">TARNISHED</a>
+    <div class="nav-right">
+      <a href="/#writing" class="nav-link">writing</a>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">○</button>
+    </div>
+  </div>
+</nav>
+
+<div class="article-wrap">
+
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="article-num">001</span>
+      <span class="article-meta-line"></span>
+      <span class="article-date">MARCH 2026</span>
+    </div>
+    <h1 class="article-title">Self-hosting without<br>the <em>pain</em></h1>
+    <p class="article-lede">
+      On losing the tinkering, finding it again, and building a home server that's mostly mine — with all the stress, deleted containers, and renewed energy that came with it.
+    </p>
+  </header>
+
+  <article class="article-body">
+
+    <p>
+      There was a time when a phone was something you took apart. Not literally — though sometimes literally — but in the sense that it was a thing you could get inside of, replace the launcher, flash a custom ROM, make it behave differently than the manufacturer intended. I remember flashing CyanogenMod onto a Samsung Galaxy S2 and feeling like I had built something, even though I had just followed a guide. The Nexus 4 came later, and with it LineageOS and a few others I can't recall the names of anymore. The point wasn't the result. The point was the tinkering.
+    </p>
+
+    <p>
+      That stopped at some point. Life moved — Sweden to Vancouver to Denmark — and with every relocation came new routines and a slow drift away from the part of me that found joy in making things work in unintended ways. The subscriptions crept in. Google One for the photos. Netflix. HBO Max. Disney+. YouTube Premium, which I am still quietly ashamed of. None of them individually felt like a problem. Collectively they added up to a monthly number and a feeling that I was a consumer of someone else's infrastructure, indefinitely.
+    </p>
+
+    <p>
+      The thing about storing your life on someone else's servers is that it only works while they're running them. The photos of my cat, the files I'd accumulated over years — they were mine in the sense that I had access to them. They were not mine in the sense that I could guarantee that access. A pricing change, a shutdown, a terms-of-service update I hadn't read: any of those could make the arrangement feel very different very quickly. That had worked fine for a long time. But it had started to feel fragile in a way I couldn't quite ignore.
+    </p>
+
+    <h2>The reentry point</h2>
+
+    <p>
+      It started, as many things do, with Home Assistant. I bought a used Lenovo ThinkCentre — a small form-factor box that looked industrial and cost almost nothing — and spent a weekend getting Home Assistant OS running on it. Some Zigbee sensors. A few smart bulbs. Radiator thermostats. And then my first automation, which technically worked, but in the way that a roundabout works: functional, but you're always slightly aware that there should be a better route.
+    </p>
+
+    <p>
+      Home Assistant remains, to this day, the least interesting part of my setup. It is also probably the most useful thing I run. That tension is something I've made peace with.
+    </p>
+
+    <p>
+      The real shift came when I discovered that Google Takeout could export photos with their metadata intact, and that <strong>Immich</strong> — a self-hosted photo library — could actually import them properly. That was the moment. If I could migrate thousands of photos out of Google Photos and into something running on hardware I owned, in a house I lived in, then the whole premise of depending on their cloud started to feel optional rather than necessary.
+    </p>
+
+    <div class="pullquote">
+      <p>The intention does not configure a service correctly. I learned this the hard way, several times.</p>
+    </div>
+
+    <p>
+      I bought a GMKtec mini PC — an N150 processor, 12GB of DDR5 RAM, 1TB NVMe SSD. For a second terabyte I dug out an external drive that had come with me from Sweden to Vancouver to Denmark, sitting unused for the better part of eight years. I plugged it in. It worked immediately, which felt like a minor miracle and also like a small argument for keeping old hardware around.
+    </p>
+
+    <p>
+      On the GMKtec I installed Ubuntu Server. What happened next took the better part of a year. Nextcloud for file sync. Immich for photos. Nginx as a reverse proxy — except that last part didn't work, not for a long time. I owned a domain for about six months before I could actually use it, because I could not get Nginx to behave. In the meantime I used Tailscale, which lets you reach your home network from anywhere without touching your router or understanding reverse proxies. It is a very good piece of software and I have complicated feelings about having needed it as a crutch. Eventually I got Nginx working, added a Cloudflare tunnel, and retired the Tailscale workaround. The domain finally had a purpose.
+    </p>
+
+    <p>
+      It took a long time. It was stressful in a way that's hard to communicate to people who haven't done it. Not stressful like an emergency — stressful like a slow accumulation of things that don't work yet, configurations you don't fully understand, documentation that assumes knowledge you don't have. I cannot emphasise this enough: it is genuinely difficult, and anyone who tells you otherwise has either forgotten what it was like to start, or is trying to sell you something.
+    </p>
+
+    <h2>Things that broke</h2>
+
+    <p>
+      Let me tell you about Watchtower. Watchtower is a container that automatically updates your other containers. I set it up, confirmed it was running, and then — at some point I cannot identify — it stopped. I don't know when. I don't know why. What I do know is that I noticed, roughly a year and a half later, that something seemed off. When I checked, Watchtower wasn't running. Every container on the server was running a version from eighteen months ago. The day I realised and kicked off the updates, I got more notifications than I'd seen from a home server in my life. That was a fun afternoon.
+    </p>
+
+    <p>
+      Then there's the Nextcloud story, which I tell with some embarrassment. Nextcloud wasn't in a Docker Compose file — it was running as a standalone <code>docker run</code> command, which I had found somewhere online and executed without fully understanding. It did not have a restart policy. After a server reboot, it didn't come back up. I, not knowing this, ran a cleanup command I found on a forum that pruned stopped containers. The Nextcloud container was a stopped container. I didn't lose anything critical. I did have to rebuild my CV from memory, which was a specific kind of pain. The container is now in a Compose file. It has a restart policy. I have a script that handles this. I have learned.
+    </p>
+
+    <p>
+      The photo migration deserves its own mention. The first import into Immich ended up with thousands of images clustered together, all showing the same date — something had gone wrong with how the metadata was being read. I couldn't immediately figure out why. After trying several things and failing, I deleted the library and started the import again. The second time it worked. I still don't know exactly what was different. Sometimes that's the answer.
+    </p>
+
+    <p>
+      Some photos were missing metadata entirely — they predated my use of Google Photos, taken before the timestamps were ever recorded. Rather than treating this as a problem, I used the forced re-examination as an opportunity to sort through everything. What was actually worth keeping? It turned out: less than I thought. That exercise was unexpectedly valuable.
+    </p>
+
+    <h2>What I actually learned</h2>
+
+    <p>
+      Docker networking took me a long time. Adding a new container is straightforward. Making containers communicate with each other is not. Routing traffic through other containers — proxies, authentication layers, internal DNS — is a level of complexity that still exceeds my comfortable grasp. I understand it at a high level. Implementing it without consulting something is still beyond me. I have made peace with this too.
+    </p>
+
+    <p>
+      The thing that changed everything was documentation. Not documentation I did from the start — I didn't. I documented the first few containers, then got lazy, then made changes and documented some of them, then made more changes and documented fewer of them. Six months in, I had a system I couldn't fully describe to myself. I had to go back and rebuild the knowledge base from scratch: what's running, what port does it use, what does it talk to, what would break if it disappeared. Compose files committed to a repo. Notes updated when I make changes. Port maps. Snapshots before significant modifications.
+    </p>
+
+    <p>
+      It sounds obvious. It is obvious. But there's a version of learning that only happens by first doing the thing wrong, recognising the cost of having done it wrong, and then doing it right with genuine motivation rather than theoretical understanding. I needed the pain of the undocumented system to care properly about the documented one.
+    </p>
+
+    <p>
+      I also want to say something about AI as a learning tool, because it made a real difference here — not in a dramatic way, but in a practical one. The old workflow for something you didn't understand was: search for it, find a forum thread from 2019, follow a link to documentation, not understand a term in the documentation, search for that term, repeat. It worked, but slowly and with a lot of dead ends. Being able to ask a question, get an explanation at the right level of detail, and immediately ask a follow-up about the part you still didn't understand — that's a meaningfully faster way to learn. I noticed it most not while debugging, but while planning the next steps of the setup: thinking through what I wanted to build, understanding the options, and actually retaining it because I could keep asking until it made sense.
+    </p>
+
+    <h2>Is it worth it</h2>
+
+    <p>
+      Immich works. It is not as good as Google Photos at face recognition or natural language search — type "cat" into Google Photos and it finds every cat you have ever photographed, without effort. Immich is improving, but it's not there yet. For how I actually use a photo library, this doesn't matter much. What matters is that those photos are on a drive in my home, backed up to a second drive, accessible when I'm offline, and not subject to any company's pricing decisions or terms of service changes. That trade is worth it.
+    </p>
+
+    <p>
+      Nextcloud works. The server runs quietly under my desk and I rarely think about it, which is exactly what I want from infrastructure.
+    </p>
+
+    <p>
+      The subscriptions are mostly gone. There are still compromises — the Google Nest speakers, the Pixel tablet, the Google Home integration for voice control that I haven't replaced yet. De-googling is a direction, not an event. The goal is not purity. The goal is to own more of my own setup than I did before, and to understand what I'm running and why.
+    </p>
+
+    <div class="pullquote">
+      <p>Things don't stay pristine. Neither do people. You pick up scratches, you learn slowly and imperfectly, and then you try again with slightly better tools.</p>
+    </div>
+
+    <p>
+      What I didn't expect was how much I missed this. Not the homelab specifically — the feeling of being someone who tinkers. Of spending a Saturday afternoon debugging something that doesn't matter to anyone but me, and finding that satisfying rather than pointless. That part of the project has nothing to do with privacy or subscriptions or Docker networking. It's just the re-discovery of something I'd let go of without noticing, and the quiet pleasure of having it back.
+    </p>
+
+    <div class="stack-note">
+      <div class="stack-note-label">CURRENT SETUP — as of march 2026</div>
+      <ul>
+        <li><strong>GMKtec N150</strong> Ubuntu Server · all Docker containers · 2TB total storage</li>
+        <li><strong>Lenovo ThinkCentre SFF</strong> Home Assistant OS · Zigbee · Matter/Thread</li>
+        <li><strong>Immich</strong> photo library · self-hosted · Google Takeout migrated</li>
+        <li><strong>Nextcloud AIO</strong> file sync · now in Compose · now has a restart policy</li>
+        <li><strong>Nginx + Cloudflare tunnel</strong> reverse proxy · external access · no open ports</li>
+        <li><strong>Watchtower</strong> container updates · confirmed running · checked recently</li>
+      </ul>
+    </div>
+
+  </article>
+
+  <nav class="article-footer-nav">
+    <a href="/#writing" class="footer-nav-back">all writing</a>
+  </nav>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-left">tarnished.dk</span>
+    <span class="footer-right">march 2026</span>
+  </div>
+</footer>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('theme-btn');
+  if (html.dataset.theme === 'dark') {
+    html.dataset.theme = 'light';
+    btn.textContent = '●';
+    localStorage.setItem('theme', 'light');
+  } else {
+    html.dataset.theme = 'dark';
+    btn.textContent = '○';
+    localStorage.setItem('theme', 'dark');
+  }
+}
+(function() {
+  const saved = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('theme-btn').textContent = theme === 'dark' ? '○' : '●';
+})();
+</script>
+
+</body>
+</html>
