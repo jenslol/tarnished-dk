@@ -26,6 +26,7 @@
   --mono: 'DM Mono', monospace;
   --serif: 'Instrument Serif', serif;
   --sans: 'DM Sans', sans-serif;
+  --grid-opacity: 0.018;
 }
 [data-theme="light"] {
   --bg: #f4f2ee;
@@ -38,6 +39,7 @@
   --text-3: #b0ada8;
   --accent: #3a6636;
   --accent-dim: rgba(58,102,54,0.08);
+  --grid-opacity: 0.028;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
@@ -49,7 +51,22 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  position: relative;
 }
+
+/* GRID TEXTURE */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(128,128,128,var(--grid-opacity)) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128,128,128,var(--grid-opacity)) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
 
 /* NAV */
 nav {
@@ -60,6 +77,16 @@ nav {
   border-bottom: 0.5px solid var(--border);
   padding: 0 32px;
 }
+nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(128,128,128,var(--grid-opacity)) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128,128,128,var(--grid-opacity)) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
 .nav-inner {
   max-width: 720px;
   margin: 0 auto;
@@ -67,6 +94,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 .wordmark {
   font-family: var(--mono);
@@ -127,8 +155,8 @@ nav {
 }
 .article-num {
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.2em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   color: var(--text-3);
 }
 .article-meta-line {
@@ -138,8 +166,8 @@ nav {
 }
 .article-date {
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   color: var(--text-3);
 }
 .article-title {
@@ -185,6 +213,15 @@ nav {
   font-family: var(--serif);
   font-size: 1.05em;
 }
+.article-body code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  color: var(--text);
+  background: var(--bg2);
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 0.5px solid var(--border);
+}
 
 /* SECTION BREAKS */
 .article-body h2 {
@@ -224,8 +261,8 @@ nav {
 }
 .stack-note-label {
   font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.2em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   color: var(--text-3);
   margin-bottom: 12px;
 }
@@ -283,9 +320,9 @@ footer {
 }
 .footer-left, .footer-right {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-3);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 /* RESPONSIVE */
@@ -427,7 +464,7 @@ footer {
     </p>
 
     <div class="stack-note">
-      <div class="stack-note-label">CURRENT SETUP — as of march 2026</div>
+      <div class="stack-note-label">CURRENT SETUP — AS OF MARCH 2026</div>
       <ul>
         <li><strong>GMKtec N150</strong> Ubuntu Server · all Docker containers · 2TB total storage</li>
         <li><strong>Lenovo ThinkCentre SFF</strong> Home Assistant OS · Zigbee · Matter/Thread</li>
