@@ -1,7 +1,619 @@
 <!DOCTYPE html>
-<html>
-<head><title>tarnished.dk</title></head>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tarnished</title>
+<meta name="description" content="Jens — learning, building, accepting imperfection. Notes on self-hosting, privacy, AI, and the craft of working smarter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0c0b;
+  --bg2: #141413;
+  --bg3: #1c1c1a;
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.14);
+  --text: #e2ddd6;
+  --text-2: #8a8680;
+  --text-3: #4a4845;
+  --accent: #9cb898;
+  --accent-dim: rgba(156,184,152,0.12);
+  --mono: 'DM Mono', monospace;
+  --serif: 'Instrument Serif', serif;
+  --sans: 'DM Sans', sans-serif;
+}
+[data-theme="light"] {
+  --bg: #f4f2ee;
+  --bg2: #eceae5;
+  --bg3: #e2e0da;
+  --border: rgba(0,0,0,0.07);
+  --border-strong: rgba(0,0,0,0.14);
+  --text: #1a1916;
+  --text-2: #6b6860;
+  --text-3: #b0ada8;
+  --accent: #3a6636;
+  --accent-dim: rgba(58,102,54,0.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* GRID SYSTEM */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* NAV */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 0.5px solid var(--border);
+  padding: 0 32px;
+}
+.nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wordmark {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.nav-link {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.nav-link:hover { color: var(--text); }
+.theme-toggle {
+  background: none;
+  border: 0.5px solid var(--border-strong);
+  color: var(--text-2);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: color 0.15s, border-color 0.15s;
+  font-size: 13px;
+}
+.theme-toggle:hover { color: var(--text); border-color: var(--border-strong); }
+
+/* HERO */
+.hero {
+  padding: 88px 0 72px;
+  border-bottom: 0.5px solid var(--border);
+}
+.hero-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--text-3);
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.hero-meta::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 0.5px;
+  background: var(--text-3);
+}
+.hero-headline {
+  font-family: var(--serif);
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 32px;
+  max-width: 700px;
+}
+.hero-headline em {
+  font-style: italic;
+  color: var(--accent);
+}
+.hero-body {
+  font-size: 15px;
+  color: var(--text-2);
+  max-width: 480px;
+  line-height: 1.75;
+  margin-bottom: 40px;
+}
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border: 0.5px solid var(--border-strong);
+  color: var(--text-3);
+  border-radius: 1px;
+}
+.tag.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* SECTION HEADER */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 48px 0 28px;
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--text-3);
+}
+.section-line {
+  flex: 1;
+  height: 0.5px;
+  background: var(--border);
+}
+
+/* PROJECTS */
+.projects { padding-bottom: 64px; border-bottom: 0.5px solid var(--border); }
+.project-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 0.5px solid var(--border);
+}
+.project-card {
+  background: var(--bg);
+  padding: 32px;
+  transition: background 0.2s;
+  cursor: default;
+}
+.project-card:hover { background: var(--bg2); }
+.project-index {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+}
+.project-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.project-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.project-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  border: 0.5px solid var(--border-strong);
+  padding: 3px 7px;
+  border-radius: 1px;
+}
+
+/* WRITING */
+.writing { padding-bottom: 64px; border-bottom: 0.5px solid var(--border); }
+.post-list { display: flex; flex-direction: column; }
+.post-item {
+  display: grid;
+  grid-template-columns: 80px 1fr 100px;
+  align-items: baseline;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 0.5px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s;
+}
+.post-item:last-child { border-bottom: none; }
+.post-item:hover .post-title { color: var(--accent); }
+.post-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+}
+.post-title {
+  font-size: 14px;
+  color: var(--text);
+  transition: color 0.15s;
+  line-height: 1.4;
+}
+.post-date {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  text-align: right;
+  letter-spacing: 0.06em;
+}
+.post-status {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--accent);
+  border: 0.5px solid var(--accent);
+  padding: 2px 6px;
+  border-radius: 1px;
+  letter-spacing: 0.08em;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+/* NOW */
+.now-section { padding-bottom: 64px; border-bottom: 0.5px solid var(--border); }
+.now-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 0.5px solid var(--border);
+}
+.now-cell {
+  background: var(--bg);
+  padding: 28px;
+}
+.now-cell-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text-3);
+  margin-bottom: 14px;
+}
+.now-cell-content {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+.now-cell-content strong {
+  color: var(--text);
+  font-weight: 400;
+}
+
+/* ABOUT STRIP */
+.about-strip {
+  padding: 56px 0;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 64px;
+  border-bottom: 0.5px solid var(--border);
+  align-items: start;
+}
+.about-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--text-3);
+  padding-top: 4px;
+}
+.about-text {
+  font-size: 15px;
+  color: var(--text-2);
+  line-height: 1.85;
+}
+.about-text p + p { margin-top: 1.2em; }
+.about-text a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 0.5px solid currentColor;
+}
+
+/* FOOTER */
+footer {
+  padding: 28px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-left {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+}
+.footer-right {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+}
+
+/* INTRO ANIMATION */
+.fade-in {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: fadeUp 0.6s ease forwards;
+}
+.fade-in:nth-child(1) { animation-delay: 0.05s; }
+.fade-in:nth-child(2) { animation-delay: 0.15s; }
+.fade-in:nth-child(3) { animation-delay: 0.25s; }
+.fade-in:nth-child(4) { animation-delay: 0.35s; }
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 720px) {
+  .container { padding: 0 20px; }
+  nav { padding: 0 20px; }
+  .hero { padding: 56px 0 48px; }
+  .hero-headline { font-size: 38px; }
+  .project-grid { grid-template-columns: 1fr; }
+  .now-grid { grid-template-columns: 1fr; }
+  .about-strip { grid-template-columns: 1fr; gap: 16px; }
+  .post-item { grid-template-columns: 48px 1fr; }
+  .post-date { display: none; }
+}
+</style>
+</head>
 <body>
-<p>Coming soon.</p>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="wordmark">TARNISHED</a>
+    <div class="nav-right">
+      <a href="#projects" class="nav-link">projects</a>
+      <a href="#writing" class="nav-link">writing</a>
+      <a href="#now" class="nav-link">now</a>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">○</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-meta fade-in">JENS &nbsp;·&nbsp; SØNDERBORG, DK</div>
+      <h1 class="hero-headline fade-in">
+        Curious by habit.<br>
+        <em>Building by necessity.</em>
+      </h1>
+      <p class="hero-body fade-in">
+        I help people work smarter with the tools available to them. Mostly I'm just lazy enough to automate the things I don't want to do twice. Less resume, more signal.
+      </p>
+      <div class="hero-tags fade-in">
+        <span class="tag active">self-hosting</span>
+        <span class="tag active">privacy-first</span>
+        <span class="tag active">AI &amp; automation</span>
+        <span class="tag">industrial design</span>
+        <span class="tag">open source</span>
+        <span class="tag">de-googling</span>
+        <span class="tag">home automation</span>
+        <span class="tag active">learning in public</span>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="projects" id="projects">
+      <div class="section-header">
+        <span class="section-label">PROJECTS</span>
+        <span class="section-line"></span>
+      </div>
+      <div class="project-grid">
+
+        <div class="project-card">
+          <div class="project-index">01 / homelab</div>
+          <div class="project-name">The stack that<br>replaced the cloud</div>
+          <p class="project-desc">
+            A self-hosted infrastructure built around the idea that your data shouldn't live on someone else's servers. Nextcloud for files and sync, Immich for photos — running locally, backed up properly, owned entirely.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">docker</span>
+            <span class="project-tag">nextcloud</span>
+            <span class="project-tag">immich</span>
+            <span class="project-tag">nginx</span>
+            <span class="project-tag">cloudflare tunnel</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-index">02 / local AI</div>
+          <div class="project-name">Everything<br>connected, locally</div>
+          <p class="project-desc">
+            Running local language models through Ollama, wired up via MCP to Home Assistant for voice control, and slowly connecting the rest of the home stack. The goal: useful AI that doesn't phone home.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">ollama</span>
+            <span class="project-tag">MCP</span>
+            <span class="project-tag">home assistant</span>
+            <span class="project-tag">voice</span>
+            <span class="project-tag">local-first</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-index">03 / this site</div>
+          <div class="project-name">Tarnished.dk —<br>built in the open</div>
+          <p class="project-desc">
+            A personal site built as a statement: no framework, no tracker, no analytics. Plain HTML and CSS, deployed to Cloudflare Pages. The aesthetic is intentional — engineered, not styled.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">html</span>
+            <span class="project-tag">css</span>
+            <span class="project-tag">cloudflare pages</span>
+            <span class="project-tag">no-framework</span>
+          </div>
+        </div>
+
+        <div class="project-card" style="background: var(--bg2); cursor: default;">
+          <div class="project-index" style="color: var(--text-3);">— / more</div>
+          <div class="project-name" style="color: var(--text-3);">Work stuff<br>coming later</div>
+          <p class="project-desc" style="color: var(--text-3);">
+            There's more — automation workflows, AI tooling for small teams, IT decisions that actually stuck. That section is being written. Things take the time they take.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">pending</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- WRITING -->
+    <section class="writing" id="writing">
+      <div class="section-header">
+        <span class="section-label">WRITING</span>
+        <span class="section-line"></span>
+      </div>
+      <div class="post-list">
+        <a href="#" class="post-item">
+          <span class="post-num">001</span>
+          <span class="post-title">Self-hosting without the pain — a practical starting point<span class="post-status">soon</span></span>
+          <span class="post-date">2026</span>
+        </a>
+        <a href="#" class="post-item">
+          <span class="post-num">002</span>
+          <span class="post-title">Why I stopped trusting cloud photo storage<span class="post-status">soon</span></span>
+          <span class="post-date">2026</span>
+        </a>
+        <a href="#" class="post-item">
+          <span class="post-num">003</span>
+          <span class="post-title">The password manager problem — and how we solved it for 25 people<span class="post-status">soon</span></span>
+          <span class="post-date">2026</span>
+        </a>
+        <a href="#" class="post-item">
+          <span class="post-num">004</span>
+          <span class="post-title">Local AI is ready. You don't need the cloud for this anymore<span class="post-status">soon</span></span>
+          <span class="post-date">2026</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- NOW -->
+    <section class="now-section" id="now">
+      <div class="section-header">
+        <span class="section-label">NOW</span>
+        <span class="section-line"></span>
+      </div>
+      <div class="now-grid">
+        <div class="now-cell">
+          <div class="now-cell-label">BUILDING</div>
+          <div class="now-cell-content">
+            A local AI setup connecting <strong>Ollama + MCP</strong> to Home Assistant — voice-controlled, fully offline, zero cloud dependency.
+          </div>
+        </div>
+        <div class="now-cell">
+          <div class="now-cell-label">LEARNING</div>
+          <div class="now-cell-content">
+            How far local models can actually go. Also: <strong>running</strong>, which is harder than any of this.
+          </div>
+        </div>
+        <div class="now-cell">
+          <div class="now-cell-label">THINKING ABOUT</div>
+          <div class="now-cell-content">
+            Whether <strong>de-googling</strong> is an act of principle or just stubbornness. Probably both.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <div class="about-strip" id="about">
+      <div class="about-label">ABOUT</div>
+      <div class="about-text">
+        <p>
+          The word "tarnished" comes from Elden Ring — it's what they call the ones who lost their grace but kept going anyway. I like that. Things don't stay pristine. People don't either. You pick up scratches, you get things wrong, you learn slowly and imperfectly and then you try again with slightly better tools.
+        </p>
+        <p>
+          I'm based in Sønderborg, Denmark. I work in IT at a small company — handling everything from infrastructure to automation to "can you fix my laptop." In the margins I run a homelab, experiment with local AI, and try to make my home smart without giving away my data to do it.
+        </p>
+        <p>
+          This site exists because I think out loud better in writing than in meetings. It's not a portfolio. It's a log.
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-left">tarnished.dk &nbsp;—&nbsp; built without unnecessary decoration</span>
+    <span class="footer-right">updated mar 2026</span>
+  </div>
+</footer>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('theme-btn');
+  if (html.dataset.theme === 'dark') {
+    html.dataset.theme = 'light';
+    btn.textContent = '●';
+    localStorage.setItem('theme', 'light');
+  } else {
+    html.dataset.theme = 'dark';
+    btn.textContent = '○';
+    localStorage.setItem('theme', 'dark');
+  }
+}
+(function() {
+  const saved = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('theme-btn').textContent = theme === 'dark' ? '○' : '●';
+})();
+</script>
 </body>
 </html>
