@@ -26,6 +26,7 @@
   --mono: 'DM Mono', monospace;
   --serif: 'Instrument Serif', serif;
   --sans: 'DM Sans', sans-serif;
+  --grid-opacity: 0.018;
 }
 [data-theme="light"] {
   --bg: #f4f2ee;
@@ -38,6 +39,7 @@
   --text-3: #b0ada8;
   --accent: #3a6636;
   --accent-dim: rgba(58,102,54,0.08);
+  --grid-opacity: 0.028;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
@@ -49,7 +51,22 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  position: relative;
 }
+
+/* GRID TEXTURE */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(128,128,128,var(--grid-opacity)) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128,128,128,var(--grid-opacity)) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
 
 /* GRID SYSTEM */
 .container {
@@ -67,6 +84,16 @@ nav {
   border-bottom: 0.5px solid var(--border);
   padding: 0 32px;
 }
+nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(128,128,128,var(--grid-opacity)) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128,128,128,var(--grid-opacity)) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
 .nav-inner {
   max-width: 1080px;
   margin: 0 auto;
@@ -74,6 +101,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 .wordmark {
   font-family: var(--mono);
@@ -115,18 +143,18 @@ nav {
 
 /* HERO */
 .hero {
-  padding: 88px 0 72px;
+  padding: 80px 0 64px;
   border-bottom: 0.5px solid var(--border);
 }
 .hero-meta {
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.24em;
+  font-size: 11px;
+  letter-spacing: 0.2em;
   color: var(--text-3);
   margin-bottom: 28px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 .hero-meta::before {
   content: '';
@@ -137,12 +165,12 @@ nav {
 }
 .hero-headline {
   font-family: var(--serif);
-  font-size: clamp(42px, 6vw, 72px);
+  font-size: clamp(42px, 6vw, 62px);
   font-weight: 400;
   line-height: 1.05;
   letter-spacing: -0.02em;
-  margin-bottom: 32px;
-  max-width: 700px;
+  margin-bottom: 28px;
+  max-width: 680px;
 }
 .hero-headline em {
   font-style: italic;
@@ -151,9 +179,9 @@ nav {
 .hero-body {
   font-size: 15px;
   color: var(--text-2);
-  max-width: 480px;
+  max-width: 460px;
   line-height: 1.75;
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 }
 .hero-tags {
   display: flex;
@@ -162,15 +190,15 @@ nav {
 }
 .tag {
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   padding: 4px 10px;
   border: 0.5px solid var(--border-strong);
   color: var(--text-3);
   border-radius: 1px;
 }
 .tag.active {
-  border-color: var(--accent);
+  border-color: rgba(156,184,152,0.5);
   color: var(--accent);
   background: var(--accent-dim);
 }
@@ -178,14 +206,14 @@ nav {
 /* SECTION HEADER */
 .section-header {
   display: flex;
-  align-items: baseline;
-  gap: 16px;
-  padding: 48px 0 28px;
+  align-items: center;
+  gap: 14px;
+  padding: 44px 0 24px;
 }
 .section-label {
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  font-size: 11px;
+  letter-spacing: 0.2em;
   color: var(--text-3);
 }
 .section-line {
@@ -195,7 +223,7 @@ nav {
 }
 
 /* PROJECTS */
-.projects { padding-bottom: 64px; border-bottom: 0.5px solid var(--border); }
+.projects { padding-bottom: 56px; border-bottom: 0.5px solid var(--border); }
 .project-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -205,56 +233,86 @@ nav {
 }
 .project-card {
   background: var(--bg);
-  padding: 32px;
+  padding: 28px;
   transition: background 0.2s;
   cursor: default;
 }
 .project-card:hover { background: var(--bg2); }
+.project-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
 .project-index {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-3);
-  letter-spacing: 0.1em;
-  margin-bottom: 20px;
+  letter-spacing: 0.08em;
 }
+.project-status {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.status-dot.online { background: var(--accent); }
+.status-dot.wip { background: var(--accent); opacity: 0.45; }
+.status-dot.pending { background: var(--text-3); }
 .project-name {
   font-family: var(--serif);
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 400;
-  line-height: 1.2;
-  margin-bottom: 12px;
+  line-height: 1.25;
+  margin-bottom: 10px;
   letter-spacing: -0.01em;
 }
 .project-desc {
   font-size: 13px;
   color: var(--text-2);
   line-height: 1.7;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 .project-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
 }
 .project-tag {
   font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.08em;
+  font-size: 11px;
+  letter-spacing: 0.06em;
   color: var(--text-3);
   border: 0.5px solid var(--border-strong);
-  padding: 3px 7px;
+  padding: 2px 7px;
   border-radius: 1px;
 }
+.project-card.dim {
+  background: var(--bg2);
+  cursor: default;
+}
+.project-card.dim:hover { background: var(--bg2); }
+.project-card.dim .project-name,
+.project-card.dim .project-desc,
+.project-card.dim .project-index { color: var(--text-3); }
 
 /* WRITING */
-.writing { padding-bottom: 64px; border-bottom: 0.5px solid var(--border); }
+.writing { padding-bottom: 56px; border-bottom: 0.5px solid var(--border); }
 .post-list { display: flex; flex-direction: column; }
 .post-item {
   display: grid;
-  grid-template-columns: 80px 1fr 100px;
+  grid-template-columns: 56px 1fr 90px;
   align-items: baseline;
-  gap: 24px;
-  padding: 18px 0;
+  gap: 16px;
+  padding: 14px 0;
   border-bottom: 0.5px solid var(--border);
   text-decoration: none;
   color: inherit;
@@ -264,9 +322,9 @@ nav {
 .post-item:hover .post-title { color: var(--accent); }
 .post-num {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-3);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 }
 .post-title {
   font-size: 14px;
@@ -276,25 +334,25 @@ nav {
 }
 .post-date {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-3);
   text-align: right;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
 }
 .post-status {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--accent);
   border: 0.5px solid var(--accent);
-  padding: 2px 6px;
+  padding: 1px 6px;
   border-radius: 1px;
-  letter-spacing: 0.08em;
-  margin-left: 10px;
+  letter-spacing: 0.06em;
+  margin-left: 8px;
   vertical-align: middle;
 }
 
 /* NOW */
-.now-section { padding-bottom: 64px; border-bottom: 0.5px solid var(--border); }
+.now-section { padding-bottom: 56px; border-bottom: 0.5px solid var(--border); }
 .now-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -304,14 +362,14 @@ nav {
 }
 .now-cell {
   background: var(--bg);
-  padding: 28px;
+  padding: 24px;
 }
 .now-cell-label {
   font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.2em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   color: var(--text-3);
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 .now-cell-content {
   font-size: 13px;
@@ -325,17 +383,17 @@ nav {
 
 /* ABOUT STRIP */
 .about-strip {
-  padding: 56px 0;
+  padding: 52px 0;
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 64px;
+  gap: 56px;
   border-bottom: 0.5px solid var(--border);
   align-items: start;
 }
 .about-label {
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  font-size: 11px;
+  letter-spacing: 0.2em;
   color: var(--text-3);
   padding-top: 4px;
 }
@@ -368,15 +426,15 @@ footer {
 }
 .footer-left {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-3);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
 }
 .footer-right {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-3);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 /* INTRO ANIMATION */
@@ -404,6 +462,7 @@ footer {
   .about-strip { grid-template-columns: 1fr; gap: 16px; }
   .post-item { grid-template-columns: 48px 1fr; }
   .post-date { display: none; }
+  footer { padding: 24px 20px; }
 }
 </style>
 </head>
@@ -432,7 +491,7 @@ footer {
         <em>Building by necessity.</em>
       </h1>
       <p class="hero-body fade-in">
-        I help people work smarter with the tools available to them. Mostly I'm just lazy enough to automate the things I don't want to do twice. Less resume, more signal.
+        IT for a veterinary equipment company by day. Self-hosted infrastructure, local AI, and home automation by night. Mostly I'm just lazy enough to automate the things I don't want to do twice.
       </p>
       <div class="hero-tags fade-in">
         <span class="tag active">self-hosting</span>
@@ -455,10 +514,15 @@ footer {
       <div class="project-grid">
 
         <div class="project-card">
-          <div class="project-index">01 / homelab</div>
+          <div class="project-top">
+            <div class="project-index">01 / homelab</div>
+            <div class="project-status" style="color: var(--accent);">
+              <span class="status-dot online"></span> online
+            </div>
+          </div>
           <div class="project-name">The stack that<br>replaced the cloud</div>
           <p class="project-desc">
-            A self-hosted infrastructure built around the idea that your data shouldn't live on someone else's servers. Nextcloud for files and sync, Immich for photos — running locally, backed up properly, owned entirely.
+            Started with a used ThinkCentre and a Home Assistant install. Ended with a full Docker stack after accidentally deleting my Nextcloud container and rebuilding my CV from memory. 6 containers, 2TB, running under a desk.
           </p>
           <div class="project-tags">
             <span class="project-tag">docker</span>
@@ -470,10 +534,15 @@ footer {
         </div>
 
         <div class="project-card">
-          <div class="project-index">02 / local AI</div>
+          <div class="project-top">
+            <div class="project-index">02 / local AI</div>
+            <div class="project-status" style="color: var(--text-3);">
+              <span class="status-dot wip"></span> in progress
+            </div>
+          </div>
           <div class="project-name">Everything<br>connected, locally</div>
           <p class="project-desc">
-            Running local language models through Ollama, wired up via MCP to Home Assistant for voice control, and slowly connecting the rest of the home stack. The goal: useful AI that doesn't phone home.
+            Ollama running local models, wired via MCP to Home Assistant for voice control. The goal: useful AI that doesn't phone home. Currently works about 70% of the time, which is honest.
           </p>
           <div class="project-tags">
             <span class="project-tag">ollama</span>
@@ -485,10 +554,15 @@ footer {
         </div>
 
         <div class="project-card">
-          <div class="project-index">03 / this site</div>
+          <div class="project-top">
+            <div class="project-index">03 / this site</div>
+            <div class="project-status" style="color: var(--accent);">
+              <span class="status-dot online"></span> v0.2
+            </div>
+          </div>
           <div class="project-name">Tarnished.dk —<br>built in the open</div>
           <p class="project-desc">
-            A personal site built as a statement: no framework, no tracker, no analytics. Plain HTML and CSS, deployed to Cloudflare Pages. The aesthetic is intentional — engineered, not styled.
+            No framework, no tracker, no analytics. Plain HTML and CSS, deployed to Cloudflare Pages. The aesthetic is intentional — engineered, not styled. You're reading 623 lines of hand-written code.
           </p>
           <div class="project-tags">
             <span class="project-tag">html</span>
@@ -498,11 +572,16 @@ footer {
           </div>
         </div>
 
-        <div class="project-card" style="background: var(--bg2); cursor: default;">
-          <div class="project-index" style="color: var(--text-3);">— / more</div>
-          <div class="project-name" style="color: var(--text-3);">Work stuff<br>coming later</div>
-          <p class="project-desc" style="color: var(--text-3);">
-            There's more — automation workflows, AI tooling for small teams, IT decisions that actually stuck. That section is being written. Things take the time they take.
+        <div class="project-card dim">
+          <div class="project-top">
+            <div class="project-index">— / work</div>
+            <div class="project-status" style="color: var(--text-3);">
+              <span class="status-dot pending"></span> queued
+            </div>
+          </div>
+          <div class="project-name">Automation &amp; AI<br>for a small team</div>
+          <p class="project-desc">
+            Power Automate flows, Copilot Studio agents, a password manager rollout for 25 people, and IT decisions that actually stuck. Write-ups coming — things take the time they take.
           </p>
           <div class="project-tags">
             <span class="project-tag">pending</span>
@@ -524,17 +603,17 @@ footer {
           <span class="post-title">Self-hosting without the pain</span>
           <span class="post-date">mar 2026</span>
         </a>
-        <a href="#" class="post-item" style="opacity: 0.4; pointer-events: none;">
+        <a href="#" class="post-item" style="opacity: 0.35; pointer-events: none;">
           <span class="post-num">002</span>
           <span class="post-title">Why I stopped trusting cloud photo storage<span class="post-status">soon</span></span>
           <span class="post-date">2026</span>
         </a>
-        <a href="#" class="post-item" style="opacity: 0.4; pointer-events: none;">
+        <a href="#" class="post-item" style="opacity: 0.35; pointer-events: none;">
           <span class="post-num">003</span>
           <span class="post-title">The password manager problem — and how we solved it for 25 people<span class="post-status">soon</span></span>
           <span class="post-date">2026</span>
         </a>
-        <a href="#" class="post-item" style="opacity: 0.4; pointer-events: none;">
+        <a href="#" class="post-item" style="opacity: 0.35; pointer-events: none;">
           <span class="post-num">004</span>
           <span class="post-title">Local AI is ready. You don't need the cloud for this anymore<span class="post-status">soon</span></span>
           <span class="post-date">2026</span>
@@ -586,7 +665,7 @@ footer {
       </div>
     </div>
 
-  </div><!-- /container -->
+  </div>
 </main>
 
 <footer>
